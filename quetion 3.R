@@ -6,7 +6,7 @@ library(rstudioapi)
 setwd("E:/math assignment")
 
 # Verify if the file exists
-file.exists("E:/math assignment")
+file.exists("United Airlines Aircraft Operating Statistics- Cost Per Block Hour (Unadjusted).xls")
 # If the file exists, this should return TRUE
 
 # If the file extension is .xlsx, update the file name accordingly:
@@ -19,39 +19,10 @@ data_file <- "United Airlines Aircraft Operating Statistics- Cost Per Block Hour
 all_data <- read_excel(data_file, range = "B2:W158")
 all_data
 
-maintenance_categories <- c("labor", "materials", "third party", "burden")
-years <- 1995:2015
-
-# Function to extract data for a given row number (Maintenance/Load Factor)
-get_data_by_row <- function(row_num) {
-  return(na.omit(as.numeric(all_data[row_num, -1])))
-}
-get_maintenace_category <- function(row_num) {
-  labor <- get_data_by_row(row_num + 1)
-  materials <- get_data_by_row(row_num + 2)
-  third_party <- get_data_by_row(row_num + 3)
-  burden <- get_data_by_row(row_num + 5)
-  return(setNames(
-    c(sum(labor), sum(materials), sum(third_party), sum(burden)),
-    maintenance_categories
-  ))
-}
-
-# For ploting Load Factor bar plot
-plot_bar <- function(data, title) {
-  barplot(data,
-          main = title,
-          xlab = "Years",
-          ylab = "Load Factor (%)",
-          col = "lightblue",
-          border = "red"
-  )
-}
-
-# Maintenance and Load Factor row numbers
-maintenance_rows <- c(16, 55, 94, 133)
-load_factor_rows <- c(34, 73, 112, 151)
-
+# define categories
+daily_utilization_categories <- c("Block hours", "Airborne hours", "Departures")
+ownership_categories <- c("Rental", "Depreciation and Amortization")
+purchased_goods_categories <- c("Fuel/Oil", "Insurance", "Other (inc. Tax)")
 fleet_category <- c(
   "small narrowbodies",
   "large narrowbodies",
@@ -59,48 +30,71 @@ fleet_category <- c(
   "total fleet"
 )
 
-# Load necessary library
-library(RColorBrewer)  # For color palettes
+# row numbers
+purchased_goods_rows <- c(16, 55, 94, 133) - 5
+ownership_rows <- purchased_goods_rows + 12
+daily_utilization_rows <- ownership_rows + 13
 
-# Pie chart for maintenance
-windows(width = 1920 / 100, height = 1080 / 100) # Set window size
-par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
+get_data_by_row <- function(row_num) {
+  if (row_num > nrow(all_data)) {
+    stop("Row number exceeds data range.")
+  }
+  return(na.omit(as.numeric(all_data[row_num, -1])))
+}
 
-# Define a color palette
-colors <- brewer.pal(4, "Set3")  # Using RColorBrewer for a set of 4 distinct colors
+get_category_data <- function(row_num, categories) {
+  rows_data <- lapply(
+    seq_along(categories),
+    function(i) get_data_by_row(row_num + i)
+  )
+  costs <- unlist(rows_data)
+  category <- factor(rep(categories, sapply(rows_data, length)))
+  return(data.frame(costs = costs, category = category))
+}
 
-# Create pie charts for each maintenance category with enhancements
-lapply(1:4, function(i) {
-  data <- get_maintenace_category(maintenance_rows[i])
-  
-  # Calculate percentages
-  percentages <- round(100 * data / sum(data), 1)
-  
-  # Create labels with category names and percentages
-  labels <- paste0(names(data), ": ", percentages, "%")
-  
-  # Create pie chart
-  pie(data, 
-      labels = labels,        # Use labels with percentages
-      main = paste("Maintenance Costs for", fleet_category[i]),  # Descriptive title
-      col = colors,          # Set colors for slices
-      border = "white")      # Add border to slices
-})
+box_plot <- function(data, title, ylab) {
+  boxplot(costs ~ category,
+          data = data,
+          main = title,
+          col = "green",
+          ylab = ylab,
+          border = "red"
+  )
+}
 
-# Add an outer title for all pie charts
-mtext("Maintenance Cost Distribution", outer = TRUE, cex = 1.5)
+plot_category <- function(rows, categories, title, ylab) {
+  windows(width = 1920 / 100, height = 1080 / 100) # Set window size
+  par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
+  # Create the box plot using the formula interface
+  lapply(
+    seq_along(rows),
+    function(i) {
+      box_plot(
+        get_category_data(
+          rows[i], categories
+        ), fleet_category[i], ylab
+      )
+    }
+  )
+  mtext(title, outer = TRUE, cex = 1.5)
+  par(mfrow = c(1, 1))
+}
 
-# Reset plotting parameters to default
-par(mfrow = c(1, 1))
-
-
-# bar chart for load factor
-windows(width = 1920 / 100, height = 1080 / 100) # Set window size
-par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
-lapply(1:4, function(i) {
-  data <- setNames(get_data_by_row(load_factor_rows[i]), years)
-  plot_bar(data, fleet_category[i])
-})
-mtext("Load Factor", outer = TRUE, cex = 1.5)
-par(mfrow = c(1, 1))
-
+plot_category(
+  purchased_goods_rows,
+  purchased_goods_categories,
+  "Purchased Goods",
+  "Hours"
+)
+plot_category(
+  ownership_rows,
+  ownership_categories,
+  "Aircraft Ownership",
+  "Cost ($)"
+)
+plot_category(
+  daily_utilization_rows,
+  daily_utilization_categories,
+  "Daily Utilization",
+  "Cost ($)"
+)
