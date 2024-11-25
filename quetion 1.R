@@ -3,10 +3,10 @@ library(rstudioapi)
 
 # Set working directory to the location of your Excel file
 # Set the working directory to the folder where the file is located
-setwd("E:\math assignment")
+setwd("E:/math assignment")
 
 # Verify if the file exists
-file.exists("E:\math assignment")
+file.exists("E:/math assignment")
 # If the file exists, this should return TRUE
 
 # If the file extension is .xlsx, update the file name accordingly:
@@ -143,8 +143,8 @@ plot_histogram <- function(frequency_distribution, window_title) {
   barplot(frequency_distribution,
           xlab = "Salary Ranges",
           ylab = "Frequency",
-          col = "lightblue",
-          border = "black",
+          col = "darkgreen",
+          border = "red",
           space = 0,  # No space between bars
           width = 1,  # Adjust width to fill the space better
           main = window_title
@@ -152,4 +152,5 @@ plot_histogram <- function(frequency_distribution, window_title) {
 }
 
 # Plot histogram for the sample frequency distribution
-plot_histogram(frequency_distribution_sample, "Histogram of Salary Wages Sample of 27 Observations")
+plot_histogram(frequency_distribution_sample, "Histogram of Salary Wages Sample of 27 Observations")
+
