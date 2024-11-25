@@ -43,7 +43,7 @@ length(salary_wages_sample)
 set.seed(123)  # For reproducibility
 salary_wages_sample_27 <- sample(salary_wages_sample, 27, replace = FALSE)
 salary_wages_sample_27
-# View the sample of 28 observations
+# View the sample of 27 observations
 print(salary_wages_sample_27)
 
 ## Assuming these functions and salary data extraction methods have already been defined:
@@ -93,7 +93,7 @@ salary_wages_tfleet <- get_salary_wages(123)    # For total fleet
 # Combine the extracted salary data
 combined_salary_wages <- c(salary_wages_snbodies, salary_wages_lnbodies, salary_wages_wbodies, salary_wages_tfleet)
 
-# If you want to take exactly 28 samples, you can sample from combined data
+# If you want to take exactly 27 samples, you can sample from combined data
 set.seed(123)  # For reproducibility
 salary_wages_sample_27 <- sample(combined_salary_wages, 27, replace = FALSE)
 
