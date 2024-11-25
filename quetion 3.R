@@ -56,7 +56,7 @@ box_plot <- function(data, title, ylab) {
   boxplot(costs ~ category,
           data = data,
           main = title,
-          col = "green",
+          col = "darkgreen",
           ylab = ylab,
           border = "red"
   )
