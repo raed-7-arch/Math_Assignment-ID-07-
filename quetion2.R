@@ -3,10 +3,10 @@ library(rstudioapi)
 
 # Set working directory to the location of your Excel file
 # Set the working directory to the folder where the file is located
-setwd("E:\math assignment")
+setwd("E:/math assignment")
 
 # Verify if the file exists
-file.exists("E:\math assignment")
+file.exists("United Airlines Aircraft Operating Statistics- Cost Per Block Hour (Unadjusted).xls")
 # If the file exists, this should return TRUE
 
 # If the file extension is .xlsx, update the file name accordingly:
@@ -43,7 +43,7 @@ plot_bar <- function(data, title) {
           main = title,
           xlab = "Years",
           ylab = "Load Factor (%)",
-          col = "lightblue",
+          col = "darkgreen",
           border = "red"
   )
 }
